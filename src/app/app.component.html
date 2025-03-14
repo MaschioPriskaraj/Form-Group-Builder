@@ -1,0 +1,8 @@
+<div class="flex flex-col md:flex-row h-screen">
+  <app-left-pane class="w-full md:w-1/4 border-r" [fieldGroups]="fieldGroups" (groupAdded)="getFieldGroups()" (groupSelected)="selectedGroupId = $event"></app-left-pane>
+  <app-middle-pane class="w-full md:w-1/2 border-r" [selectedGroupId]="selectedGroupId" (groupCleared)="groupCleared()"></app-middle-pane>
+  <div class="w-full md:w-1/4 relative">
+    <app-right-pane></app-right-pane>
+    <app-right-drawer class="absolute top-0 right-0 w-full"></app-right-drawer>
+  </div>
+</div>

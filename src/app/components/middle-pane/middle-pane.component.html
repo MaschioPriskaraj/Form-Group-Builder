@@ -1,0 +1,215 @@
+<section *ngIf="fieldGroup">
+  <div>
+    <button class="bg-cyan-300 p-2 rounded-sm m-3" (click)="previewForm()">{{ !showPreview ? 'Preview Form' : 'Cancel Preview'}}</button>
+    <button class="bg-green-300 p-2 rounded-sm m-3" (click)="exportConfig()">Export Config</button>
+    <button class="bg-yellow-300 p-2 rounded-sm m-3" (click)="importConfig()">Import Config</button>
+    <form class="m-2" *ngIf="showPreview" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div *ngFor="let element of elements">
+        <label>{{ element.name }}</label>
+        <br>
+        <input
+          *ngIf="element.type === 'text'"
+          formControlName="{{ element.name }}"
+          placeholder="{{ element.placeholder}}"
+          type="text"
+          class="border outline-none border-gray-300 w-full rounded-sm p-2"
+        />
+        <input
+          *ngIf="element.type === 'number'"
+          formControlName="{{ element.name }}"
+          placeholder="{{ element.placeholder}}"
+          type="number"
+          class="border outline-none border-gray-300 w-full rounded-sm p-2"
+        />
+        <textarea
+          *ngIf="element.type === 'textarea'"
+          formControlName="{{ element.name }}"
+          placeholder="{{ element.placeholder}}"
+          class="border outline-none border-gray-300 w-full rounded-sm p-2"
+        ></textarea>
+        <input
+          *ngIf="element.type === 'date'"
+          formControlName="{{ element.name }}"
+          type="date"
+          class="border outline-none border-gray-300 w-full rounded-sm p-2"
+        />
+        <input
+          *ngIf="element.type === 'time'"
+          formControlName="{{ element.name }}"
+          type="time"
+          class="border outline-none border-gray-300 w-full rounded-sm p-2"
+        />
+        <input
+          *ngIf="element.type === 'datetime'"
+          formControlName="{{ element.name }}"
+          type="datetime-local"
+          class="border outline-none border-gray-300 w-full rounded-sm p-2"
+        />
+        <select
+          *ngIf="element.type === 'dropdown'"
+          formControlName="{{ element.name }}"
+          class="border outline-none border-gray-300 w-full rounded-sm p-2"
+        >
+          <option *ngFor="let option of element.options">{{ option }}</option>
+        </select>
+        <div *ngIf="element.type === 'radio'">
+          <label *ngFor="let option of element.options">
+            <input type="radio" [formControlName]="element.name" [value]="option" />
+            {{ option }}
+          </label>
+        </div>
+        <div *ngIf="element.type === 'checkbox'">
+          <label *ngFor="let option of element.options">
+            <input
+              type="checkbox"
+              [formControlName]="element.name"
+              [value]="option"
+            />
+            {{ option }}
+          </label>
+        </div>
+        <input
+          *ngIf="element.type === 'file'"
+          formControlName="{{ element.name }}"
+          type="file"
+        />
+        <!-- Error Messages -->
+        <div *ngIf="form.get(element.name)?.invalid && form.get(element.name)?.touched" class="text-red-500">
+          <div *ngIf="form.get(element.name)?.errors?.['required']">This field is required</div>
+          <!-- Add more error messages based on validators -->
+        </div>
+      </div>
+      <button type="submit" class="bg-gray-400 p-2 rounded-md">Submit</button>
+    </form>
+  </div>
+  <div class="p-4 m-4 bg-blue-100 rounded shadow my-2 relative flex flex-col">
+    <input
+      type="text"
+      [ngClass]="isGroupEdit ? 'my-1 p-1 rounded-sm outline-none border-dashed border-b-2 border-blue-400 bg-transparent text-blue-800 ' : 'outline-none bg-transparent mt-2 border-0 font-bold text-gray-700'"
+      [disabled]="!isGroupEdit"
+      [(ngModel)]="fieldGroup.name"
+      placeholder="Name"
+    />
+
+    <input
+      type="text"
+      [ngClass]="isGroupEdit ? 'my-1 p-1 rounded-sm outline-none border-dashed border-b-2 border-blue-400 bg-transparent text-blue-800 ' : 'outline-none bg-transparent mt-2 border-0 italic text-gray-500'"
+      [disabled]="!isGroupEdit"
+      [(ngModel)]="fieldGroup.description"
+      placeholder="Add Description"
+    />
+
+    <div class="absolute top-4 right-2 space-x-2">
+      <button *ngIf="!isGroupEdit" (click)="isGroupEdit = true">✏️</button>
+      <button
+        *ngIf="isGroupEdit"
+        (click)="updateGroupById(fieldGroup?.id, fieldGroup)"
+      >
+        ✅
+      </button>
+      <button>📄</button>
+      <button (click)="deleteGroup(fieldGroup?.id); $event.stopPropagation()">
+        ❌
+      </button>
+    </div>
+  </div>
+  <div
+    class="p-4 border bg-white min-h-screen"
+    (dragover)="allowDrop($event)"
+    (drop)="drop($event)"
+  >
+    <h2 class="font-bold">Form Elements</h2>
+
+    <div
+      *ngFor="let element of elements"
+      class="p-4 bg-blue-100 rounded shadow my-2 relative cursor-move"
+      draggable="true"
+      (dragstart)="dragStart($event, element)"
+      (dragover)="allowDrop($event)"
+      (drop)="dropReorder($event, element)"
+    >
+      <!-- Field Name -->
+      <h3 class="text-lg font-semibold">
+        {{ element.name || "Untitled Field" }}
+      </h3>
+
+      <p *ngIf="element?.description" class="text-gray-400">
+        {{ element?.description }}
+      </p>
+
+      <!-- Render Input Field Based on Type -->
+      <input
+        *ngIf="element.type === 'text'"
+        type="text"
+        [placeholder]="element.placeholder || 'Enter text...'"
+        class="w-full p-2 border rounded mt-2"
+      />
+
+      <input
+        *ngIf="element.type === 'number'"
+        type="number"
+        [placeholder]="element.placeholder || 'Enter number...'"
+        class="w-full p-2 border rounded mt-2"
+      />
+
+      <textarea
+        *ngIf="element.type === 'textarea'"
+        [placeholder]="element.placeholder || 'Enter multi-line text...'"
+        class="w-full p-2 border rounded mt-2"
+      ></textarea>
+
+      <input
+        *ngIf="element.type === 'date'"
+        type="date"
+        class="w-full p-2 border rounded mt-2"
+      />
+
+      <input
+        *ngIf="element.type === 'time'"
+        type="time"
+        class="w-full p-2 border rounded mt-2"
+      />
+
+      <input
+        *ngIf="element.type === 'datetime'"
+        type="datetime-local"
+        class="w-full p-2 border rounded mt-2"
+      />
+
+      <select
+        *ngIf="element.type === 'dropdown'"
+        class="w-full p-2 border rounded mt-2"
+      >
+        <option *ngFor="let option of element.options">{{ option }}</option>
+      </select>
+
+      <div *ngIf="element.type === 'radio'" class="mt-2">
+        <label *ngFor="let option of element.options" class="block">
+          <input type="radio" name="radio_{{ element.id }}" /> {{ option }}
+        </label>
+      </div>
+
+      <div *ngIf="element.type === 'checkbox'" class="mt-2">
+        <label *ngFor="let option of element.options" class="block">
+          <input type="checkbox" /> {{ option }}
+        </label>
+      </div>
+
+      <input
+        *ngIf="element.type === 'file'"
+        type="file"
+        class="w-full p-2 border rounded mt-2"
+      />
+
+      <!-- Action Buttons -->
+      <div class="absolute top-4 right-2 space-x-2">
+        <button (click)="editElement(element)">✏️</button>
+        <button (click)="copyElement(element)">📄</button>
+        <button (click)="deleteElement(element.id)">❌</button>
+      </div>
+    </div>
+  </div>
+</section>
+<section *ngIf="!fieldGroup" class="m-4 p-2 bg-red-200 text-red-700 rounded-md">
+  Please select a field group
+</section>

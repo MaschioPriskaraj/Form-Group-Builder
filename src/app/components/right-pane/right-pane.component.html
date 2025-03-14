@@ -1,0 +1,27 @@
+<div class="p-4">
+  <h2 class="font-bold">Elements</h2>
+  <input
+    type="text"
+    placeholder="Search elements..."
+    class="mb-4 p-2 border rounded w-full"
+    [(ngModel)]="searchTerm"
+    (input)="filterElements()"
+  />
+  <ul>
+    <li
+      *ngFor="let element of filteredElements"
+      class="flex gap-2 cursor-pointer my-2"
+      draggable="true"
+      (dragstart)="dragStart($event, element)"
+    >
+      <!-- <div class="size-14 rounded-md bg-gray-100 hidden xs:block lg:block"></div> -->
+      <div class="flex justify-items-center p-2 rounded-md bg-blue-100 flex sm:hidden lg:flex">
+        <img [src]="element.image" alt="time">
+      </div>
+      <div class="flex flex-col">
+        <p>{{ element.name }}</p>
+        <p class="text-gray-400 text-sm">{{ element.label }}</p>
+      </div>
+    </li>
+  </ul>
+</div>

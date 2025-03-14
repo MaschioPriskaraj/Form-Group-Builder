@@ -1,0 +1,49 @@
+<div *ngIf="selectedElement" class="p-4 border-l bg-gray-100 min-h-screen">
+    <div class="flex">
+        <h2 class="font-bold">Edit Properties</h2>
+        <button class="ml-auto px-2 bg-white border-2 border-gray-500 text-black rounded-md" (click)="closeDrawer()">Close</button>
+    </div>
+
+    <!-- Field Name -->
+    <div class="mt-4">
+        <label class="block text-sm">Field Name:</label>
+        <input type="text" [(ngModel)]="selectedElement.name" (input)="updateProperty('name', selectedElement.name)"
+            class="w-full p-2 border rounded" />
+    </div>
+
+    <!-- Description -->
+    <div class="mt-4">
+        <label class="block text-sm">Description:</label>
+        <textarea [(ngModel)]="selectedElement.description"
+            (input)="updateProperty('description', selectedElement.description)"
+            class="w-full p-2 border rounded"></textarea>
+    </div>
+
+    <!-- Placeholder -->
+    <div class="mt-4">
+        <label class="block text-sm">Placeholder:</label>
+        <input type="text" [(ngModel)]="selectedElement.placeholder"
+            (input)="updateProperty('placeholder', selectedElement.placeholder)" class="w-full p-2 border rounded" />
+    </div>
+
+    <!-- Required Checkbox -->
+    <div class="mt-4 flex items-center">
+        <input type="checkbox" [(ngModel)]="selectedElement.required"
+            (change)="updateProperty('required', selectedElement.required)" />
+        <label class="ml-2 text-sm">Required</label>
+    </div>
+
+    <!-- Dropdown Options (Only if the element is a Dropdown) -->
+    <div *ngIf="selectedElement.type === 'dropdown' || selectedElement.type === 'radio' || selectedElement.type === 'checkbox'" class="mt-4">
+        <label class="block text-sm">Dropdown Options:</label>
+        <input type="text" [(ngModel)]="newOption" placeholder="Enter option" class="w-full p-2 border rounded" />
+        <button (click)="addOption()" class="mt-2 bg-blue-500 text-white px-3 py-1 rounded">Add Option</button>
+        <ul class="mt-2">
+            <li *ngFor="let option of selectedElement.options; let i = index"
+                class="flex justify-between p-2 bg-gray-200 mt-1">
+                {{ option }}
+                <button (click)="removeOption(i)" class="text-red-500">X</button>
+            </li>
+        </ul>
+    </div>
+</div>

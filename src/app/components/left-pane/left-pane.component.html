@@ -1,0 +1,32 @@
+<div class="p-4">
+  <div class="flex items-center">
+    <p>Field Groups</p>
+    <button
+      class="bg-blue-500 text-white px-3 py-1 rounded ml-auto"
+      (click)="isNewGroup = true"
+    >
+      Create New
+    </button>
+  </div>
+  <ul>
+    <li
+      *ngFor="let group of fieldGroups"
+      class="mt-2 p-2 cursor-pointer border rounded shadow-md"
+      [ngClass]="{
+        'border-blue-500 text-blue-500 bg-blue-100 border-2 shadow-blue-500/50':
+          group.id === selectedGroupId,
+        'border-gray-300 text-black bg-white': group.id !== selectedGroupId
+      }"
+      (click)="selectGroup(group.id)"
+    >
+      {{ group.name }}
+    </li>
+    <li *ngIf="isNewGroup" class="mt-2 border rounded shadow-md flex">
+      <input type="text" [(ngModel)]="newGroupName" class="border-0 p-2 rounded outline-none" placeholder="Type here ..." />
+      <div class="flex gap-2 ml-auto mr-2">
+        <button (click)="cancel()">❌</button>
+        <button (click)="addGroup()">✅</button>
+      </div>
+    </li>
+  </ul>
+</div>
